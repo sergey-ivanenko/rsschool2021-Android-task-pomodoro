@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">Pomodoro</string>
     <string name="start">start</string>
+    <string name="stop">stop</string>
     <string name="timer_text">00:00:00</string>
     <string name="edit_text_hint">Minutes</string>
     <string name="add_timer">add timer</string>
+    <string name="toast_empty">Field can\'t be empty</string>
+    <string name="toast_equals_zero">Please, enter a positive number</string>
 </resources>
