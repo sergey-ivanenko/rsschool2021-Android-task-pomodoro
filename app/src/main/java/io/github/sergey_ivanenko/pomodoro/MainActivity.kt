@@ -1,24 +1,30 @@
 package io.github.sergey_ivanenko.pomodoro
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.InputType
 import android.widget.Toast
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sergey_ivanenko.pomodoro.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(), PomodoroListener {
+class MainActivity : AppCompatActivity(), PomodoroListener, LifecycleObserver {
 
     private var _binding: ActivityMainBinding? = null
     private val binding: ActivityMainBinding get() = requireNotNull(_binding)
 
     private val pomodoroTimers = mutableListOf<PomodoroTimer>()
     private val pomodoroAdapter = PomodoroAdapter(this)
+
     private var nextId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
+        binding.setTime.inputType = InputType.TYPE_CLASS_NUMBER
         setContentView(binding.root)
 
         binding.recycler.apply {
@@ -77,5 +83,24 @@ class MainActivity : AppCompatActivity(), PomodoroListener {
         pomodoroAdapter.submitList(newTimers)
         pomodoroTimers.clear()
         pomodoroTimers.addAll(newTimers)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun onAppBackgrounded() {
+        pomodoroTimers.forEach {
+            if (it.isStarted) {
+                val startIntent = Intent(this, ForegroundService::class.java)
+                startIntent.putExtra(COMMAND_ID, COMMAND_START)
+                startIntent.putExtra(STARTED_TIMER_TIME_MS, it)
+                startService(startIntent)
+            }
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onAppForegrounded() {
+        val stopIntent = Intent(this, ForegroundService::class.java)
+        stopIntent.putExtra(COMMAND_ID, COMMAND_STOP)
+        startService(stopIntent)
     }
 }

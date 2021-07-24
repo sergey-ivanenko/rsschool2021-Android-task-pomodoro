@@ -4,6 +4,7 @@ import android.graphics.drawable.AnimationDrawable
 import android.os.CountDownTimer
 import android.util.Log
 import androidx.core.view.isInvisible
+import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.RecyclerView
 import io.github.sergey_ivanenko.pomodoro.databinding.PomodoroItemBinding
 import kotlinx.coroutines.*
@@ -11,7 +12,7 @@ import kotlinx.coroutines.*
 class PomodoroViewHolder(
     private val binding: PomodoroItemBinding,
     private val listener: PomodoroListener
-) : RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root), LifecycleObserver {
 
     private var timer: CountDownTimer? = null
     //private var current = 0L
@@ -60,15 +61,14 @@ class PomodoroViewHolder(
         timer = getCountDownTimer(pomodoroTimer)
         timer?.start()
 
-        job = CoroutineScope(Dispatchers.Default).launch {
+        /*job = CoroutineScope(Dispatchers.Default).launch {
             while (pomodoroTimer.currentMs >= 0) {
                 //progressBarTime += INTERVAL
                 //pomodoroTimer.currentMs -= INTERVAL
                 binding.circleProgressBar.setCurrent(pomodoroTimer.startMs - pomodoroTimer.currentMs)
                 delay(INTERVAL)
             }
-        }
-
+        }*/
         binding.blinkingIndicator.isInvisible = false
         (binding.blinkingIndicator.background as? AnimationDrawable)?.start()
 
@@ -92,7 +92,7 @@ class PomodoroViewHolder(
                 //pomodoroTimer.currentMs += interval
                 pomodoroTimer.currentMs = millisUntilFinished
                 binding.pomodoroTimer.text = pomodoroTimer.currentMs.displayTime()
-                //binding.circleProgressBar.setCurrent(pomodoroTimer.startMs - pomodoroTimer.currentMs)
+                binding.circleProgressBar.setCurrent(pomodoroTimer.startMs - pomodoroTimer.currentMs)
             }
 
             override fun onFinish() {
@@ -110,10 +110,10 @@ class PomodoroViewHolder(
         }
     }
 
-    private fun Long.displayTime(): String {
-        /*if (this <= 0L) {
+    /*private fun Long.displayTime(): String {
+        *//*if (this <= 0L) {
             return START_TIME
-        }*/
+        }*//*
 
         val h = this / UNIT_ONE_SECOND / 3600
         val m = (this / UNIT_ONE_SECOND % 3600) / 60
@@ -129,12 +129,12 @@ class PomodoroViewHolder(
         } else {
             "0$count"
         }
-    }
+    }*/
 
     private companion object {
         //private const val START_TIME = "00:00:00"
         /*private const val UNIT_TEN_MS = 10L*/
-        private const val UNIT_ONE_SECOND = 1000L
+        /*private const val UNIT_ONE_SECOND = 1000L*/
         private const val INTERVAL = /*1000L*/500L
         //private const val PERIOD = 1000L * 60L * 60L * 24L // Day
     }
