@@ -2,7 +2,6 @@ package io.github.sergey_ivanenko.pomodoro
 
 import android.graphics.drawable.AnimationDrawable
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.core.view.isInvisible
 import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.RecyclerView
@@ -15,9 +14,6 @@ class PomodoroViewHolder(
 ) : RecyclerView.ViewHolder(binding.root), LifecycleObserver {
 
     private var timer: CountDownTimer? = null
-    //private var current = 0L
-    private var progressBarTime = 0L
-
     private var job: Job? = null
 
     fun bind(pomodoroTimer: PomodoroTimer) {
@@ -40,12 +36,8 @@ class PomodoroViewHolder(
         binding.startTimer.setOnClickListener {
             if (pomodoroTimer.isStarted) {
                 listener.stop(pomodoroTimer.id, pomodoroTimer.currentMs)
-                //binding.startTimer.text = "start"
-                //binding.startTimer.text = itemView.resources.getString(R.string.start)
             } else {
                 listener.start(pomodoroTimer.id)
-                //binding.startTimer.text = "stop"
-                //binding.startTimer.text = itemView.resources.getString(R.string.stop)
             }
         }
 
@@ -61,18 +53,8 @@ class PomodoroViewHolder(
         timer = getCountDownTimer(pomodoroTimer)
         timer?.start()
 
-        /*job = CoroutineScope(Dispatchers.Default).launch {
-            while (pomodoroTimer.currentMs >= 0) {
-                //progressBarTime += INTERVAL
-                //pomodoroTimer.currentMs -= INTERVAL
-                binding.circleProgressBar.setCurrent(pomodoroTimer.startMs - pomodoroTimer.currentMs)
-                delay(INTERVAL)
-            }
-        }*/
         binding.blinkingIndicator.isInvisible = false
         (binding.blinkingIndicator.background as? AnimationDrawable)?.start()
-
-
     }
 
     private fun stopTimer(pomodoroTimer: PomodoroTimer) {
@@ -85,11 +67,8 @@ class PomodoroViewHolder(
 
     private fun getCountDownTimer(pomodoroTimer: PomodoroTimer): CountDownTimer {
         return object : CountDownTimer(pomodoroTimer.currentMs, INTERVAL) {
-            //val interval = UNIT_TEN_MS
-            //val interval = UNIT_ONE_SECOND
 
             override fun onTick(millisUntilFinished: Long) {
-                //pomodoroTimer.currentMs += interval
                 pomodoroTimer.currentMs = millisUntilFinished
                 binding.pomodoroTimer.text = pomodoroTimer.currentMs.displayTime()
                 binding.circleProgressBar.setCurrent(pomodoroTimer.startMs - pomodoroTimer.currentMs)
@@ -102,40 +81,11 @@ class PomodoroViewHolder(
                 binding.pomodoroItem.setCardBackgroundColor(itemView.context.getColor(R.color.dark_red_color))
                 binding.circleProgressBar.isInvisible = true
                 binding.circleProgressBar.setCurrent(0)
-
-                /*binding.blinkingIndicator.isInvisible = true
-                (binding.blinkingIndicator.background as? AnimationDrawable)?.stop()*/
             }
-
         }
     }
-
-    /*private fun Long.displayTime(): String {
-        *//*if (this <= 0L) {
-            return START_TIME
-        }*//*
-
-        val h = this / UNIT_ONE_SECOND / 3600
-        val m = (this / UNIT_ONE_SECOND % 3600) / 60
-        val s = (this / UNIT_ONE_SECOND) % 60
-        Log.i("TICK", s.toString())
-
-        return "${displaySlot(h)}:${displaySlot(m)}:${displaySlot(s)}"
-    }
-
-    private fun displaySlot(count: Long): String {
-        return if (count / 10 > 0) {
-            "$count"
-        } else {
-            "0$count"
-        }
-    }*/
 
     private companion object {
-        //private const val START_TIME = "00:00:00"
-        /*private const val UNIT_TEN_MS = 10L*/
-        /*private const val UNIT_ONE_SECOND = 1000L*/
-        private const val INTERVAL = /*1000L*/500L
-        //private const val PERIOD = 1000L * 60L * 60L * 24L // Day
+        private const val INTERVAL = 500L
     }
 }

@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.*
 
@@ -17,7 +16,6 @@ class ForegroundService: Service() {
     private var isServiceStarted = false
     private var notificationManager: NotificationManager? = null
     private var job: Job? = null
-    //private var pomodoroTimer: PomodoroTimer? = null
 
     private val builder by lazy {
         NotificationCompat.Builder(this, CHANNEL_ID)
@@ -61,7 +59,6 @@ class ForegroundService: Service() {
         if (isServiceStarted) {
             return
         }
-        Log.i("TAG", "commandStart()")
         try {
             moveToStartedState()
             startForegroundAndShowNotification()
@@ -90,7 +87,6 @@ class ForegroundService: Service() {
         if (!isServiceStarted) {
             return
         }
-        Log.i("TAG", "commandStop()")
         try {
             job?.cancel()
             stopForeground(true)
@@ -102,10 +98,8 @@ class ForegroundService: Service() {
 
     private fun moveToStartedState() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d("TAG", "moveToStartedState(): Running on Android O or higher")
             startForegroundService(Intent(this, ForegroundService::class.java))
         } else {
-            Log.d("TAG", "moveToStartedState(): Running on Android N or lower")
             startService(Intent(this, ForegroundService::class.java))
         }
     }

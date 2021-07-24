@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity(), PomodoroListener, LifecycleObserver {
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
-        binding.setTime.inputType = InputType.TYPE_CLASS_NUMBER
+        binding.setTime.setRawInputType(InputType.TYPE_CLASS_NUMBER)
         setContentView(binding.root)
 
         binding.recycler.apply {
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(), PomodoroListener, LifecycleObserver {
                 return@setOnClickListener
             }
 
-            pomodoroTimers.add(PomodoroTimer(nextId++, startMs = millisInput, currentMs = millisInput, false))
+            pomodoroTimers.add(PomodoroTimer(++nextId, startMs = millisInput, currentMs = millisInput, false))
             pomodoroAdapter.submitList(pomodoroTimers.toList())
         }
     }
@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity(), PomodoroListener, LifecycleObserver {
                 newTimers.add(it)
             }
         }
+
         pomodoroAdapter.submitList(newTimers)
         pomodoroTimers.clear()
         pomodoroTimers.addAll(newTimers)
